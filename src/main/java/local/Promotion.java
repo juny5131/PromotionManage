@@ -2,7 +2,6 @@ package local;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
-import java.util.List;
 
 @Entity
 @Table(name="Promotion_table")
@@ -14,7 +13,7 @@ public class Promotion {
     private Long resvid;
     private String custNm;
     private String hospitalNm;
-    private String hospitalId;
+    private Long hospitalId;
     private String status;
 
     public String getStatus() {
@@ -53,11 +52,11 @@ public class Promotion {
     public void setHospitalNm(String hospitalNm) {
         this.hospitalNm = hospitalNm;
     }
-    public String getHospitalId() {
+    public Long getHospitalId() {
         return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(Long hospitalId) {
         this.hospitalId = hospitalId;
     }
 
@@ -65,6 +64,15 @@ public class Promotion {
 
     @PostUpdate
     public void onPostUpdate(){
+
+        // Req / Res : 동기 방식 호출)
+        local.external.Hospital hospital = new local.external.Hospital();
+        hospital.setHospitalId(getHospitalId());
+        // mappings goes here
+        PromotionManageApplication.applicationContext.getBean(local.external.HospitalService.class)
+                .screeningRequest(hospital.getHospitalId(),hospital);
+
+
         IncrementRequested incrementRequested = new IncrementRequested();
         BeanUtils.copyProperties(this, incrementRequested);
         incrementRequested.publishAfterCommit();

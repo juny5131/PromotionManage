@@ -1,8 +1,6 @@
 package local;
 
 import local.config.kafka.KafkaProcessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -23,11 +21,11 @@ public class PolicyHandler{
     public void wheneverReservationRequested_ReservationCollect(@Payload ReservationCompleted completed){
 
         if(completed.isMe()){
-
+            //  홍보 데이터 수집
             if(completed.isMe()){
                 Promotion prm = new Promotion();
                 prm.setCustNm(completed.getCustNm());
-                prm.setHospitalId(completed.getHospitalId());
+                prm.setHospitalId(Long.parseLong(completed.getHospitalId()));
                 prm.setHospitalNm(completed.getHospitalNm());
                 prm.setResvid(completed.getId());
                 promotionRepository.save(prm);
